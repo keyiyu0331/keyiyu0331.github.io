@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keyi Yu</title>
+<meta name="description" content="Keyi Yu: Healthcare AI. LLM systems, RAG and multi-agent pipelines for clinical and biomedical data. M.S. Bioengineering at Stanford.">
+<meta property="og:title" content="Keyi Yu | Healthcare AI">
+<meta property="og:description" content="LLM systems, RAG and multi-agent pipelines for clinical and biomedical data. Stanford M.S. '27.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400;1,500&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f7f4ec;
+  --grid: rgba(76, 120, 160, .10);
+  --grid-strong: rgba(76, 120, 160, .18);
+  --ink: #1b2636;
+  --ink-soft: #4a5566;
+  --ink-faint: #7d8696;
+  --rule: #d9a3a0;
+  --pen: #2b4fa3;
+  --red-pen: #b8423a;
+  --hl: #fbe27a;
+  --hl-ink: #1b2636;
+  --sheet: rgba(255, 255, 255, .55);
+  --line: #d8d2c4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #161a20; --grid: rgba(140, 170, 200, .06); --grid-strong: rgba(140, 170, 200, .11);
+    --ink: #e6e2d8; --ink-soft: #b0b6bf; --ink-faint: #858c96; --rule: #7a3d3a;
+    --pen: #8fb0f0; --red-pen: #e58a80; --hl: rgba(240, 205, 80, .28); --hl-ink: #f3ecd2;
+    --sheet: rgba(255, 255, 255, .03); --line: #2e343c;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #161a20; --grid: rgba(140, 170, 200, .06); --grid-strong: rgba(140, 170, 200, .11);
+  --ink: #e6e2d8; --ink-soft: #b0b6bf; --ink-faint: #858c96; --rule: #7a3d3a;
+  --pen: #8fb0f0; --red-pen: #e58a80; --hl: rgba(240, 205, 80, .28); --hl-ink: #f3ecd2;
+  --sheet: rgba(255, 255, 255, .03); --line: #2e343c;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  font: 16px/1.65 "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--pen); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+.hand { font-family: Caveat, cursive; color: var(--pen); font-size: 22px; line-height: 1.1; }
+mark { background: var(--hl); box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  color: var(--hl-ink); padding: 1px 4px; border-radius: 2px; }
+
+/* page + margin rule */
+.page { position: relative; max-width: 1000px; margin: 0 auto; padding: 0 32px 0 0; }
+.page::before { content: ""; position: absolute; top: 0; bottom: 0; left: 104px;
+  border-left: 2px solid var(--rule); opacity: .8; }
+.row { display: grid; grid-template-columns: 104px 1fr; }
+.margin { padding: 6px 18px 0 0; text-align: right; font: 500 13px/1.4 "IBM Plex Mono", monospace; color: var(--red-pen); }
+.body { padding-left: 32px; min-width: 0; }
+
+/* top strip */
+.strip { display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  font: 12px/1 "IBM Plex Mono", monospace; color: var(--ink-faint); padding: 18px 0;
+  border-bottom: 1px solid var(--line); }
+.strip nav { display: flex; gap: 16px; flex-wrap: wrap; }
+.strip nav a { color: var(--ink-soft); text-decoration: none; }
+.strip nav a:hover { color: var(--pen); }
+#theme { font: inherit; background: none; border: 1px solid var(--line); color: var(--ink-soft);
+  padding: 5px 9px; border-radius: 4px; cursor: pointer; }
+
+/* hero */
+.hero { padding: 64px 0 48px; }
+.label { font: 500 12px/1.4 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.hero .label { color: var(--red-pen); }
+h1 { font: 600 clamp(44px, 7vw, 76px)/1 "IBM Plex Serif", Georgia, serif; margin: 14px 0 6px; letter-spacing: -.02em; }
+.hero .who { font: italic 400 20px/1.4 "IBM Plex Serif", Georgia, serif; color: var(--ink-soft); margin: 0 0 28px; }
+.abstract { max-width: 640px; border-left: 3px solid var(--ink); padding: 2px 0 2px 18px; margin: 0 0 30px; }
+.abstract p { margin: 0; font-size: 17px; }
+.abstract .label { margin-bottom: 6px; color: var(--ink); }
+.links { display: flex; flex-wrap: wrap; gap: 10px 22px; font: 500 14px/1 "IBM Plex Mono", monospace; align-items: center; }
+.links a.primary { background: var(--ink); color: var(--paper); padding: 10px 14px; text-decoration: none; border-radius: 3px; }
+.links a.primary:hover { background: var(--pen); }
+.hero-note { position: relative; }
+.hero-note .hand { position: absolute; right: 0; top: 18px; transform: rotate(-4deg); max-width: 200px; text-align: center; }
+
+/* section headers */
+section { padding: 52px 0 12px; }
+h2 { font: 600 30px/1.2 "IBM Plex Serif", Georgia, serif; margin: 0; }
+h2 + .label { margin: 6px 0 28px; }
+.group { font: 600 11px/1.4 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--red-pen); margin: 40px 0 14px; display: flex; align-items: center; gap: 12px; }
+.group::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.group:first-of-type { margin-top: 0; }
+
+/* experiments */
+.exp { background: var(--sheet); border: 1px solid var(--line); border-radius: 2px; padding: 22px 24px 20px;
+  margin-bottom: 22px; position: relative; }
+.exp-head { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline;
+  font: 12px/1.4 "IBM Plex Mono", monospace; color: var(--ink-faint); margin-bottom: 6px; }
+.exp-head .id { color: var(--red-pen); font-weight: 600; }
+.exp h3 { font: 600 21px/1.3 "IBM Plex Serif", Georgia, serif; margin: 0 0 14px; }
+.fields { display: grid; grid-template-columns: 92px 1fr; gap: 8px 16px; margin: 0; font-size: 15px; }
+.fields dt { font: 500 11px/2.1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.fields dd { margin: 0; color: var(--ink-soft); }
+.fields dd.stack { font: 13px/1.7 "IBM Plex Mono", monospace; }
+.exp .hand { position: absolute; right: 18px; top: -16px; transform: rotate(3deg);
+  background: var(--paper); padding: 0 6px; color: var(--red-pen); }
+
+/* job cards */
+.exp.job h3 { margin-bottom: 2px; }
+.exp.job h3 a { color: inherit; }
+.exp .role { font: italic 16px/1.5 "IBM Plex Serif", Georgia, serif; color: var(--ink-soft); margin-bottom: 14px; }
+.exp.job:has(> .role:last-child) { padding-bottom: 14px; }
+.exp.job .role:last-child { margin-bottom: 0; }
+/* earlier-work mini entries */
+.minis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.mini { border: 1px dashed var(--line); padding: 16px 18px; border-radius: 2px; background: var(--sheet); }
+.mini .exp-head { margin-bottom: 4px; }
+.mini h3 { font: 600 16px/1.35 "IBM Plex Serif", Georgia, serif; margin: 0 0 6px; }
+.mini p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+
+/* publications */
+.pubs { list-style: none; margin: 0; padding: 0; counter-reset: pub; }
+.pubs li { display: grid; grid-template-columns: 40px 1fr; gap: 4px 12px; padding: 16px 0; border-bottom: 1px dashed var(--line); counter-increment: pub; }
+.pubs li:last-child { border-bottom: 0; }
+.pubs li::before { content: "[" counter(pub) "]"; font: 500 13px/1.9 "IBM Plex Mono", monospace; color: var(--red-pen); }
+.pubs .t { font: italic 500 17px/1.4 "IBM Plex Serif", Georgia, serif; }
+.pubs .venue { font: 13px/1.6 "IBM Plex Mono", monospace; color: var(--ink-faint); margin-top: 4px; }
+.pubs .note { font-size: 14px; color: var(--ink-soft); margin-top: 4px; }
+
+/* log */
+.log { list-style: none; margin: 0; padding: 0; }
+.log li { display: grid; grid-template-columns: 170px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+.log li:last-child { border-bottom: 0; }
+.log .when { font: 13px/1.7 "IBM Plex Mono", monospace; color: var(--ink-faint); }
+.log h3 { font-size: 17px; font-weight: 600; margin: 0; }
+.log .role { font: italic 15px/1.5 "IBM Plex Serif", Georgia, serif; color: var(--ink-soft); }
+.log p { margin: 4px 0 0; font-size: 15px; color: var(--ink-soft); }
+.now { font: 600 10px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; background: var(--red-pen); color: var(--paper);
+  padding: 3px 6px; border-radius: 2px; margin-left: 8px; vertical-align: 2px; }
+
+/* materials */
+.materials { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px 32px; }
+.materials h3 { font: 500 11px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-faint); margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.materials ul { list-style: none; margin: 0; padding: 0; font: 14px/1.9 "IBM Plex Mono", monospace; }
+.materials li::before { content: "– "; color: var(--ink-faint); }
+
+/* training */
+.training { display: grid; gap: 18px; }
+.school { display: grid; grid-template-columns: 1fr auto; gap: 2px 20px; padding-bottom: 18px; border-bottom: 1px dashed var(--line); }
+.school:last-child { border-bottom: 0; }
+.school h3 { font: 600 19px/1.3 "IBM Plex Serif", Georgia, serif; margin: 0; }
+.school .when { font: 13px/1.8 "IBM Plex Mono", monospace; color: var(--ink-faint); text-align: right; }
+.school .deg { font-style: italic; color: var(--ink-soft); grid-column: 1 / -1; }
+.school .cw { grid-column: 1 / -1; font-size: 14px; color: var(--ink-faint); margin-top: 4px; }
+
+/* contact */
+.contact { padding: 64px 0 40px; }
+.contact p { max-width: 560px; font-size: 17px; margin: 0 0 24px; }
+.sign { font-family: Caveat, cursive; font-size: 40px; color: var(--pen); margin-top: 28px; transform: rotate(-2deg); display: inline-block; }
+footer { font: 12px/1 "IBM Plex Mono", monospace; color: var(--ink-faint); padding: 28px 0 40px;
+  border-top: 1px solid var(--line); margin-top: 32px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 860px) {
+  .strip nav { display: none; }
+}
+@media (max-width: 760px) {
+  .page { padding: 0 16px; }
+  .page::before { left: 8px; }
+  .row { grid-template-columns: 1fr; }
+  .margin { text-align: left; padding: 0 0 6px 12px; }
+  .body { padding-left: 12px; }
+  .hero { padding: 36px 0 32px; }
+  .hero-note .hand { position: static; transform: rotate(-2deg); display: block; text-align: left; margin-top: 20px; }
+  .fields { grid-template-columns: 1fr; gap: 0; }
+  .fields dd { margin-bottom: 10px; }
+  .log li { grid-template-columns: 1fr; gap: 2px; }
+  .exp { padding: 20px 16px 16px; }
+  .minis { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="row">
+    <div class="margin"></div>
+    <div class="body">
+      <div class="strip">
+        <span>NOTEBOOK · K. YU · VOL. <span id="vol"></span></span>
+        <nav>
+          <a href="#experience">experience</a>
+          <a href="#projects">projects</a>
+          <a href="#publications">publications</a>
+          <a href="#materials">materials</a>
+          <a href="#training">training</a>
+          <a href="#contact">contact</a>
+        </nav>
+        <button id="theme" aria-label="Toggle dark mode">light/dark</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="row hero" id="top">
+    <div class="margin">p. 01</div>
+    <div class="body hero-note">
+      <div class="label">Healthcare AI · Stanford M.S. Bioengineering '27</div>
+      <h1>Keyi Yu</h1>
+      <p class="who">Building LLM systems for clinical and biomedical data.</p>
+      <div class="abstract">
+        <div class="label">Abstract</div>
+        <p>I build multi-agent pipelines and retrieval-grounded models that work on real clinical documents, and the evaluations that show whether they can be trusted. Currently a data science research assistant at the Stanford Woods Institute; previously an AI Engineer Intern at Genentech and a researcher in Stanford Medicine's Boussard Lab. Before AI, I did neuroscience, bioinformatics and wet-lab research at UC San Diego and Scripps Research.</p>
+      </div>
+      <div class="links">
+        <a class="primary" href="mailto:keyiyu@stanford.edu?subject=Resume%20request">resume on request</a>
+        <a href="mailto:keyiyu@stanford.edu">email</a>
+        <a href="https://www.linkedin.com/in/keyiyu03/" target="_blank" rel="noopener">linkedin</a>
+        <a href="https://github.com/keyiyu0331" target="_blank" rel="noopener">github</a>
+      </div>
+      <span class="hand">open to AI/ML roles in health &amp; life sciences →&nbsp;§6</span>
+    </div>
+  </header>
+
+
+  <section class="row" id="experience">
+    <div class="margin">§1</div>
+    <div class="body">
+      <h2>Experience</h2>
+      <div class="label">Positions held, newest first</div>
+
+      <article class="exp job">
+        <div class="exp-head"><span>2026-11 → now</span><span>Stanford, CA</span></div>
+        <h3>Stanford Woods Institute for the Environment <span class="now">NOW</span></h3>
+        <div class="role">Data Scientist, Research Assistant</div>
+      </article>
+
+      <article class="exp job">
+        <div class="exp-head"><span>2026-06 → 2026-09</span><span>South San Francisco, CA</span></div>
+        <h3>Genentech</h3>
+        <div class="role">AI Engineer Intern, Product Development Data Science</div>
+        <dl class="fields">
+          <dt>Problem</dt><dd>Data Managers wrote first-draft clinical blueprints by hand from protocols, vendor documents and EHR data.</dd>
+          <dt>Approach</dt><dd>Owned a LangGraph multi-agent pipeline that drafts the blueprint. Built the Python + Snowflake SQL services that extract the source data, defined a unified schema and semantic layer with domain experts, and added LangSmith tracing across every agent step.</dd>
+          <dt>Result</dt><dd><mark>~70% less manual drafting time, ~15+ hours saved per blueprint.</mark> A companion LLM knowledge wiki (CLAUDE.md + Obsidian) cut team lookup time by 50%.</dd>
+          <dt>Stack</dt><dd class="stack">LangGraph · LangChain · OpenAI API · Snowflake · LangSmith · Python</dd>
+        </dl>
+      </article>
+
+      <article class="exp job">
+        <span class="hand">paper on arXiv</span>
+        <div class="exp-head"><span>2025-07 → 2026-09</span><span>Stanford, CA</span></div>
+        <h3>Boussard Lab, Stanford School of Medicine</h3>
+        <div class="role">Graduate AI Researcher</div>
+        <dl class="fields">
+          <dt>Question</dt><dd>Frontier models score 100% on the binary "prescribe an opioid or not" check in the Q-Pain post-operative benchmark. Does that mean their decisions are stable?</dd>
+          <dt>Method</dt><dd>Built Q-Pain++, a full-factorial stress test that varies clinical risk factors (mental health, opioid tolerance, preoperative pain), patient demographics and dosage granularity (none / low / medium / high). Evaluated prediction labels, model explanations and retrieval traceability across five models, closed-book and with guideline RAG.</dd>
+          <dt>Result</dt><dd><mark>Adding a "medium" dose option drove ~92% of decision changes, regardless of clinical context.</mark> RAG improved demographic agreement for some models and worsened it for others. Label-only audits miss these failures.</dd>
+          <dt>Paper</dt><dd><a href="https://arxiv.org/abs/2611.18631" target="_blank" rel="noopener">arXiv:2611.18631</a>, second author</dd>
+          <dt>Stack</dt><dd class="stack">LLM evaluation · RAG · fairness analysis · LLM-as-a-judge · semantic similarity</dd>
+        </dl>
+      </article>
+
+      <article class="exp job">
+        <div class="exp-head"><span>2025-05 → 2025-11</span><span>Folsom, CA · remote</span></div>
+        <h3><a href="https://www.stemzlearning.org/" target="_blank" rel="noopener">STEMz Learning</a></h3>
+        <div class="role">Machine Learning Engineer</div>
+        <dl class="fields">
+          <dt>Problem</dt><dd>A chatbot tutor that hands students the answer doesn't teach them anything.</dd>
+          <dt>Approach</dt><dd>Full-stack tutoring platform (React + Express) with adversarial prompt design and context restriction to block direct answers during quizzes, plus a MongoDB layer for learning-pattern analytics.</dd>
+          <dt>Result</dt><dd><mark>200+ student–chatbot interactions logged and structured each month.</mark></dd>
+          <dt>Stack</dt><dd class="stack">React · Express.js · MongoDB · LLM APIs</dd>
+          <dt>Live</dt><dd><a href="https://www.stemzlearning.org/" target="_blank" rel="noopener">stemzlearning.org</a></dd>
+        </dl>
+      </article>
+
+      <article class="exp job">
+        <div class="exp-head"><span>2025-06 → 2025-08</span><span>Richmond, VA · hybrid</span></div>
+        <h3>EndoMD Health</h3>
+        <div class="role">Data Scientist Intern</div>
+        <dl class="fields">
+          <dt>Problem</dt><dd>Public pediatric endocrinology data (NHANES, outpatient records) was spread across hundreds of inconsistent files.</dd>
+          <dt>Approach</dt><dd>Curated and harmonized the data with preprocessing and imputation into supervised input–output pairs, then built a reproducible LoRA fine-tuning pipeline with A/B testing and output evaluation on Google Cloud.</dd>
+          <dt>Result</dt><dd><mark>Fine-tuned Llama 3.1, Meditron and BioMistral on 13K examples.</mark> Also analyzed insurance and clinic availability by state to guide expansion planning.</dd>
+          <dt>Stack</dt><dd class="stack">Python · pandas · PyTorch · Hugging Face Transformers · LoRA · GCP</dd>
+        </dl>
+      </article>
+
+      <article class="exp job">
+        <div class="exp-head"><span>2024-09 → 2025-08</span><span>San Diego, CA</span></div>
+        <h3>Mesirov Lab, UC San Diego School of Medicine</h3>
+        <div class="role">Bioinformatics Intern</div>
+        <dl class="fields">
+          <dt>Problem</dt><dd>Large biological gene sets are noisy, which weakens enrichment analysis.</dd>
+          <dt>Approach</dt><dd>Implemented and modified a non-negative matrix factorization (NMF) pipeline with parallel processing on AWS EC2, chose the number of components with consensus clustering and cophenetic analysis, and linked components to mutation status, drug sensitivity and protein expression with ssGSEA and information-coefficient scores.</dd>
+          <dt>Result</dt><dd><mark>More functionally coherent gene sets</mark> for the PI3K-AKT-MTOR pathway, including KRAS-mutation-associated clusters validated against the literature.</dd>
+          <dt>Stack</dt><dd class="stack">Python · NumPy · pandas · scikit-learn · plotnine · AWS EC2 · Git</dd>
+        </dl>
+      </article>
+
+      <div class="group">Earlier positions</div>
+      <ul class="log">
+        <li><div class="when">2023-09 → 2025-04</div><div><h3>Rangel Lab, UCSD Cognitive Science</h3><div class="role">Research Assistant</div></div></li>
+        <li><div class="when">2024-03 → 2024-12</div><div><h3>Scripps Research</h3><div class="role">Research Intern</div></div></li>
+        <li><div class="when">2024-02 → 2024-10</div><div><h3>UCSD Altman Clinical &amp; Translational Research Institute</h3><div class="role">Data Analyst Intern</div><p>Preprocessed and analyzed neural data in MATLAB for a study of cognitive control circuits.</p></div></li>
+        <li><div class="when">2023 · 2024 (fall)</div><div><h3>UCSD Cognitive Science</h3><div class="role">Instructional Apprentice</div><p>Ran discussion sections and office hours for Sensation &amp; Perception (COGS 101A) and Neuroimaging of Cognition (COGS 165).</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="row" id="projects">
+    <div class="margin">§2</div>
+    <div class="body">
+      <h2>Projects</h2>
+      <div class="label">Experiments, written up</div>
+
+      <article class="exp">
+        <div class="exp-head"><span class="id">EXP-01</span><span>2026</span><span>Stanford · team of 3</span></div>
+        <h3>Do newer language models think more like brains?</h3>
+        <dl class="fields">
+          <dt>Question</dt><dd>How does layer-by-layer alignment with human brain activity differ across language model generations?</dd>
+          <dt>Method</dt><dd>Extracted hidden states from GPT-2 XL and DeepSeek-R1 8B / 14B and predicted fMRI responses (LeBel 2023) with noise-ceiling-normalized ridge regression, comparing peak predictivity, peak depth and area under the layer-wise profile.</dd>
+          <dt>Result</dt><dd><mark>DeepSeek models peak in intermediate layers with significantly larger AUC; GPT-2 XL peaks at its final layer.</mark> No gain from 8B to 14B, so training paradigm mattered more than scale.</dd>
+          <dt>Stack</dt><dd class="stack">PyTorch · Hugging Face · ridge regression (SVD) · fMRI</dd>
+        </dl>
+      </article>
+
+      <article class="exp">
+        <div class="exp-head"><span class="id">EXP-02</span><span>2025</span><span>Stanford · team of 2</span></div>
+        <h3>Do food categories reflect nutrition?</h3>
+        <dl class="fields">
+          <dt>Question</dt><dd>Do culinary groupings like "Dairy" or "Grains" match the actual nutritional structure of foods?</dd>
+          <dt>Method</dt><dd>Represented USDA FoodData Central and FNDDS items as 10 standardized nutrient features, then compared K-Means clusters against supervised classifiers (multinomial logistic regression, random forest, MLP) trained on standard food categories.</dd>
+          <dt>Stack</dt><dd class="stack">Python · scikit-learn · K-Means · random forest · MLP · regularization</dd>
+        </dl>
+      </article>
+
+      <article class="exp">
+        <span class="hand">SfN 2025</span>
+        <div class="exp-head"><span class="id">EXP-03</span><span>2023–25</span><span>Rangel Lab · UC San Diego</span></div>
+        <h3>Dentate gyrus rhythms in learning and recall</h3>
+        <dl class="fields">
+          <dt>Question</dt><dd>How do the layers of the hippocampal dentate gyrus coordinate when similar experiences must be linked to different outcomes?</dd>
+          <dt>Method</dt><dd>In vivo laminar-probe recordings across the granule cell and hilar layers while rats learned and recalled a spatial reward task. Wrote code for cross-layer coherence and analyzed behavior with MATLAB, SLEAP and DeepSqueak.</dd>
+          <dt>Result</dt><dd><mark>Both layers were co-recruited into 20–40 Hz rhythms during path selection and outcome.</mark> Incorrect recall choices followed reduced 20–40 Hz activity during learning.</dd>
+          <dt>Output</dt><dd>Co-authored SfN 2025 abstract; presented at UCSD URC 2024 and Lab Expo 2025.</dd>
+        </dl>
+      </article>
+
+      <article class="exp">
+        <div class="exp-head"><span class="id">EXP-04</span><span>2024</span><span>Scripps Research</span></div>
+        <h3>Does STAT3 drive liver cell senescence?</h3>
+        <dl class="fields">
+          <dt>Question</dt><dd>Earlier STAT3 knockout work suggested a role in liver aging. Does overexpressing STAT3 in young mice accelerate senescence?</dd>
+          <dt>Method</dt><dd>Delivered STAT3 with lentiviral vectors (EF1A promoter) and measured senescence with SA-β-gal staining on 16 µm and 30 µm liver slices.</dd>
+          <dt>Result</dt><dd><mark>Significantly higher senescence in STAT3-overexpressing mice (p ≤ 0.001).</mark> Slice thickness affected staining intensity, so thickness must be held constant in comparisons.</dd>
+          <dt>Stack</dt><dd class="stack">Lentivirus · CRISPR-Cas9 · SA-β-gal staining · ImageJ</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="row" id="publications">
+    <div class="margin">§3</div>
+    <div class="body">
+      <h2>Publications &amp; presentations</h2>
+      <div class="label">Papers, abstracts, posters</div>
+      <ol class="pubs">
+        <li><div>
+          <div class="t"><a href="https://arxiv.org/abs/2611.18631" target="_blank" rel="noopener">Beyond Binary Audits: Does Guideline Grounding Mitigate Decision-Space Framing in LLM Opioid Prescribing?</a></div>
+          <div class="venue">S. Roy, <b>K. Yu</b>, T. Hernandez-Boussard · arXiv:2611.18631 [cs.CL] · 2026</div>
+          <div class="note">Boussard Lab, Stanford Medicine. See §1.</div>
+        </div></li>
+        <li><div>
+          <div class="t">Dynamic co-recruitment of rhythmic activity in the hilus and granule cell layer of the dentate gyrus during learning and recall</div>
+          <div class="venue">Society for Neuroscience (SfN) 2025 · co-author</div>
+          <div class="note">Rangel Lab, UC San Diego. See EXP-03.</div>
+        </div></li>
+        <li><div>
+          <div class="t">Dentate gyrus layer dynamics in spatial reward learning</div>
+          <div class="venue">UCSD Undergraduate Research Conference 2024 · UCSD Lab Expo 2025 · presenter</div>
+        </div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="row" id="materials">
+    <div class="margin">§4</div>
+    <div class="body">
+      <h2>Materials &amp; methods</h2>
+      <div class="label">Tools and techniques</div>
+      <div class="materials">
+        <div><h3>AI engineering</h3><ul><li>LangGraph / LangChain</li><li>LangSmith</li><li>RAG</li><li>Multi-agent systems</li><li>LLM evaluation</li><li>MCP &amp; tool use</li></ul></div>
+        <div><h3>Machine learning</h3><ul><li>PyTorch</li><li>TensorFlow</li><li>Hugging Face</li><li>LoRA fine-tuning</li><li>scikit-learn</li><li>NMF / clustering</li></ul></div>
+        <div><h3>Languages</h3><ul><li>Python</li><li>SQL</li><li>R</li><li>JavaScript</li><li>C++ / Java</li><li>MATLAB</li></ul></div>
+        <div><h3>Data &amp; cloud</h3><ul><li>Snowflake</li><li>Databricks / Spark</li><li>PostgreSQL / MongoDB</li><li>AWS / GCP / Azure</li><li>Docker</li></ul></div>
+        <div><h3>Biomedical data</h3><ul><li>EHR</li><li>Clinical trial protocols</li><li>Real-world evidence</li><li>Gene expression / ssGSEA</li><li>fMRI &amp; electrophysiology</li></ul></div>
+        <div><h3>Wet lab</h3><ul><li>CRISPR-Cas9</li><li>Lentivirus production</li><li>Flow cytometry</li><li>Immunofluorescence</li><li>Confocal imaging</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="row" id="training">
+    <div class="margin">§5</div>
+    <div class="body">
+      <h2>Training</h2>
+      <div class="label">Education</div>
+      <div class="training">
+        <div class="school">
+          <h3>Stanford University</h3><div class="when">2025 → 2027</div>
+          <div class="deg">M.S. Bioengineering, Biomedical Computation track · GPA 3.85</div>
+          <div class="cw">Machine Learning · NLP with Deep Learning · Probabilistic Graphical Models · Statistical Learning · Biomedical Image Analysis · Data Science for Medicine · Modern Software Development</div>
+        </div>
+        <div class="school">
+          <h3>UC San Diego</h3><div class="when">2021 → 2025</div>
+          <div class="deg">B.S. Cognitive Science (Machine Learning) and B.S. Behavioral Neuroscience · GPA 3.93</div>
+          <div class="cw">Data Structures &amp; Algorithms · Linear Algebra · Probability &amp; Statistics · Stochastic Processes · Supervised &amp; Unsupervised ML</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="row contact" id="contact">
+    <div class="margin">§6</div>
+    <div class="body">
+      <h2>Correspondence</h2>
+      <div class="label">Get in touch</div>
+      <p>I'm looking for AI / ML engineering roles where LLMs meet healthcare and life sciences. Email is the fastest way to reach me.</p>
+      <div class="links">
+        <a class="primary" href="mailto:keyiyu@stanford.edu">keyiyu@stanford.edu</a>
+        <a href="mailto:keyiyu@stanford.edu?subject=Resume%20request">resume on request</a>
+        <a href="https://www.linkedin.com/in/keyiyu03/" target="_blank" rel="noopener">linkedin</a>
+      </div>
+      <div class="sign">— Keyi</div>
+    </div>
+  </section>
+
+  <div class="row">
+    <div class="margin"></div>
+    <div class="body">
+      <footer><span>© <span id="yr"></span> Keyi Yu · Palo Alto, CA</span><span>end of entry</span></footer>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var y = new Date().getFullYear();
+document.getElementById('yr').textContent = y;
+document.getElementById('vol').textContent = y;
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme');
+  try { var saved = localStorage.getItem('theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var cur = root.getAttribute('data-theme') ||
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
